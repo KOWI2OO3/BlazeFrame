@@ -272,4 +272,31 @@ public class Matrix3Tests
         var vector = new Vector3(1, 2, 3);
         Assert.That(matrix.Transform(vector), Is.EqualTo(matrix * vector));
     }
+
+    [Test]
+    public void TestMatrixColumnVariableToVariableLink()
+    {
+        var matrix = new Matrix3(
+            1, 1, 2,
+            4, 1, 2,
+            7, 5, 1
+        );
+        var column = matrix.Column1;
+        column.X = 10;
+        Assert.That(matrix.Column1.X, Is.EqualTo(10));
+        Assert.That(matrix.M11, Is.EqualTo(10));
+    }
+
+    [Test]
+    public void TestMatrixColumnToVariableLink()
+    {
+        var matrix = new Matrix3(
+            1, 1, 2,
+            4, 1, 2,
+            7, 5, 1
+        );
+        matrix.Column1 = new(10, 1, 2);
+        Assert.That(matrix.Column1.X, Is.EqualTo(10));
+        Assert.That(matrix.M11, Is.EqualTo(10));
+    }
 }
