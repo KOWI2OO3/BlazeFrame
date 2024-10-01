@@ -48,6 +48,8 @@ public class Vector4(float x, float y, float z, float w)
 
     public override int GetHashCode() => HashCode.Combine(X, Y, Z, W);
 
+    public override string ToString() => $"({X}, {Y}, {Z}, {W})";
+
     public Vector4 Copy() => new(X, Y, Z, W);
 
     public static Vector4 operator -(Vector4 a) => new(-a.X, -a.Y, -a.Z, -a.W);

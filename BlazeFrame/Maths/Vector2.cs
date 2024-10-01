@@ -41,6 +41,8 @@ public class Vector2(float x, float y) : IEquatable<Vector2>
 
     public override int GetHashCode() => HashCode.Combine(X, Y);
 
+    public override string ToString() => $"({X}, {Y})";
+
     public Vector2 Copy() => new(X, Y);
     
     public static Vector2 Max(Vector2 a, Vector2 b) => new(MathF.Max(a.X, b.X), MathF.Max(a.Y, b.Y));

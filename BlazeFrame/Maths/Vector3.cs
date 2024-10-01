@@ -81,6 +81,8 @@ public class Vector3(float x, float y, float z) : IEquatable<Vector3>
     public override bool Equals(object? obj) => obj is Vector3 other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(X, Y, Z);
+    
+    public override string ToString() => $"({X}, {Y}, {Z})";
 
     public Vector3 Copy() => new(X, Y, Z);
 
