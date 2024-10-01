@@ -3,16 +3,16 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    
-   <PackageId>BlazeFrame</PackageId>
-   <Version>0.0.1</Version>
-   <Authors>Koen Winkel</Authors>
-   <Description>Html Canvas and WebGL with Blazor</Description>
-   <!-- <Company>SK</Company> -->
-   <RepositoryUrl>https://github.com/KOWI2OO3/BlazeFrame</RepositoryUrl> <!-- Optional -->
-   <GeneratePackageOnBuild>true</GeneratePackageOnBuild> <!-- Optional, for auto-packaging on build -->
+    <PackageId>BlazeFrame</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>Koen Winkel</Authors>
+    <Description>Html Canvas and WebGL with Blazor</Description>
+    <!-- <Company>SK</Company> -->
+    <RepositoryUrl>https://github.com/KOWI2OO3/BlazeFrame</RepositoryUrl>
+    <!-- Optional -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <!-- Optional, for auto-packaging on build -->
   </PropertyGroup>
-
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
