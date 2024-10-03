@@ -96,8 +96,12 @@ public class Vector3(float x, float y, float z) : IEquatable<Vector3>
     public static Vector3 operator *(Vector3 a, float b) => new(a.X * b, a.Y * b, a.Z * b);
     public static Vector3 operator *(float a, Vector3 b) => new(b.X * a, b.Y * a, b.Z * a);
     public static Vector3 operator /(Vector3 a, float b) => new(a.X / b, a.Y / b, a.Z / b);
-    public static bool operator ==(Vector3 a, Vector3 b) => a.X == b.X && a.Y == b.Y && a.Z == b.Z;
-    public static bool operator !=(Vector3 a, Vector3 b) => !(a == b);
+    public static bool operator ==(Vector3? a, Vector3? b) => 
+        (a is null && b is null) || 
+        (a is not null && b is not null && 
+        a.X == b.X && a.Y == b.Y && a.Z == b.Z);
+
+    public static bool operator !=(Vector3? a, Vector3? b) => !(a == b);
     
     public static implicit operator Vector3((float x, float y, float z) tuple) => new(tuple.x, tuple.y, tuple.z);
     public static implicit operator float[](Vector3 vector) => [vector.X, vector.Y, vector.Z];

@@ -56,8 +56,12 @@ public class Vector2(float x, float y) : IEquatable<Vector2>
     public static Vector2 operator *(float a, Vector2 b) => new(b.X * a, b.Y * a);
     public static Vector2 operator /(Vector2 a, float b) => new(a.X / b, a.Y / b);
 
-    public static bool operator ==(Vector2 left, Vector2 right) => left.X == right.X && left.Y == right.Y;
-    public static bool operator !=(Vector2 left, Vector2 right) => !(left == right);
+    public static bool operator ==(Vector2? a, Vector2? b) => 
+        (a is null && b is null) || 
+        (a is not null && b is not null && 
+        a.X == b.X && a.Y == b.Y);
+    
+    public static bool operator !=(Vector2? left, Vector2? right) => !(left == right);
     
     public static implicit operator Vector2((float x, float y) tuple) => new(tuple.x, tuple.y);
     public static implicit operator float[](Vector2 vector) => [vector.X, vector.Y];

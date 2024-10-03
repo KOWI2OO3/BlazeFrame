@@ -71,6 +71,8 @@ public class Matrix3(
 
     public Matrix3 Multiply(Matrix3 other) => this * other;
 
+    public static Matrix3 CreateRotational() => null;
+
     public static Matrix3 operator -(Matrix3 a) =>
         new(
             -a.M11, -a.M12, -a.M13,
@@ -111,10 +113,14 @@ public class Matrix3(
     
     public static Matrix3 operator /(Matrix3 a, float b) => a * (1 / b);
 
-    public static bool operator ==(Matrix3 a, Matrix3 b) => a.M11 == b.M11 && a.M12 == b.M12 && a.M13 == b.M13 &&
-                                                           a.M21 == b.M21 && a.M22 == b.M22 && a.M23 == b.M23 &&
-                                                           a.M31 == b.M31 && a.M32 == b.M32 && a.M33 == b.M33;
-    public static bool operator !=(Matrix3 a, Matrix3 b) => !(a == b);
+    public static bool operator ==(Matrix3? a, Matrix3? b) => 
+        (a is null && b is null) || 
+        (a is not null && b is not null && 
+        a.M11 == b.M11 && a.M12 == b.M12 && a.M13 == b.M13 &&
+        a.M21 == b.M21 && a.M22 == b.M22 && a.M23 == b.M23 &&
+        a.M31 == b.M31 && a.M32 == b.M32 && a.M33 == b.M33);
+
+    public static bool operator !=(Matrix3? a, Matrix3? b) => !(a == b);
 
     public bool Equals(Matrix3? other) => other is not null && other == this;
 

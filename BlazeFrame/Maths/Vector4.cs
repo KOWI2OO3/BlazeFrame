@@ -60,8 +60,12 @@ public class Vector4(float x, float y, float z, float w)
     public static Vector4 operator *(float a, Vector4 b) => new(b.X * a, b.Y * a, b.Z * a, b.W * a);
     public static Vector4 operator /(Vector4 a, float b) => new(a.X / b, a.Y / b, a.Z / b, a.W / b);
     
-    public static bool operator ==(Vector4 a, Vector4 b) => a.X == b.X && a.Y == b.Y && a.Z == b.Z && a.W == b.W;
-    public static bool operator !=(Vector4 a, Vector4 b) => !(a == b);
+    public static bool operator ==(Vector4? a, Vector4? b) => 
+        (a is null && b is null) || 
+        (a is not null && b is not null && 
+        a.X == b.X && a.Y == b.Y && a.Z == b.Z && a.W == b.W);
+    
+    public static bool operator !=(Vector4? a, Vector4? b) => !(a == b);
     
     public static implicit operator Vector4((float x, float y, float z, float w) tuple) => new(tuple.x, tuple.y, tuple.z, tuple.w);
     public static implicit operator float[](Vector4 vector) => [vector.X, vector.Y, vector.Z, vector.W];
