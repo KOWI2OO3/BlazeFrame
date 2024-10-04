@@ -105,4 +105,22 @@ public class Vector3(float x, float y, float z) : IEquatable<Vector3>
     
     public static implicit operator Vector3((float x, float y, float z) tuple) => new(tuple.x, tuple.y, tuple.z);
     public static implicit operator float[](Vector3 vector) => [vector.X, vector.Y, vector.Z];
+
+    public float this[int index]
+    {
+        get => index switch
+        {
+            0 => X,
+            1 => Y,
+            2 => Z,
+            _ => throw new IndexOutOfRangeException()
+        };
+        set => _ = index switch
+        {
+            0 => X = value,
+            1 => Y = value,
+            2 => Z = value,
+            _ => throw new IndexOutOfRangeException()
+        };
+    }
 }

@@ -82,9 +82,12 @@ public class Matrix4(
                                           0, 0, 1, 0,
                                           0, 0, 0, 1);
 
-    public float Detrminant => M11 * M22 * M33 * M44 + M12 * M23 * M34 * M41 + M13 * M24 * M31 * M42 + M14 * M21 * M32 * M43
-                            - M14 * M23 * M32 * M41 - M13 * M22 * M34 * M41 - M12 * M24 * M31 * M43 - M11 * M21 * M33 * M44
-                            - M11 * M24 * M33 * M42 - M12 * M23 * M31 * M44 - M13 * M21 * M32 * M44 - M14 * M22 * M31 * M43;
+    // Calculate determinant of 4x4 matrix using cofactor expansion 
+    public float Determinant => 
+        this[0, 0] * MathHelper.Determinant3x3(this[1, 1], this[1, 2], this[1, 3], this[2, 1], this[2, 2], this[2, 3], this[3, 1], this[3, 2], this[3, 3])
+        - this[0, 1] * MathHelper.Determinant3x3(this[1, 0], this[1, 2], this[1, 3], this[2, 0], this[2, 2], this[2, 3], this[3, 0], this[3, 2], this[3, 3])
+        + this[0, 2] * MathHelper.Determinant3x3(this[1, 0], this[1, 1], this[1, 3], this[2, 0], this[2, 1], this[2, 3], this[3, 0], this[3, 1], this[3, 3])
+        - this[0, 3] * MathHelper.Determinant3x3(this[1, 0], this[1, 1], this[1, 2], this[2, 0], this[2, 1], this[2, 2], this[3, 0], this[3, 1], this[3, 2]);
     
     public Matrix4 Transpose => new(
         M11, M21, M31, M41,
@@ -92,6 +95,40 @@ public class Matrix4(
         M13, M23, M33, M43,
         M14, M24, M34, M44
     );
+
+    public Matrix4 Inverted =>
+        new Matrix4(
+            Cofactor(0, 0), -Cofactor(1, 0), Cofactor(2, 0), -Cofactor(3, 0),
+            -Cofactor(0, 1), Cofactor(1, 1), -Cofactor(2, 1), Cofactor(3, 1),
+            Cofactor(0, 2), -Cofactor(1, 2), Cofactor(2, 2), -Cofactor(3, 2),
+            -Cofactor(0, 3), Cofactor(1, 3), -Cofactor(2, 3), Cofactor(3, 3)
+        ) / Determinant;
+
+    private float Cofactor(int row, int col)
+    {
+        var subMatrix = Matrix3.EMPTY;
+        int subi = 0, subj = 0;
+
+        for(int i = 0; i < 4; i++)
+        {
+            if(i == row) continue;
+            
+            subj = 0;
+            for(int j = 0; j < 4; j++)
+            {
+                if(j == col) continue;
+                subMatrix[subi, subj] = this[i, j];
+                subj++;
+            }
+            subi++;
+        }
+
+        return subMatrix.Determinant;
+    }
+
+    public Vector4 Transform(Vector4 vector) => this * vector;
+
+    public Matrix4 Multiply(Matrix4 other) => this * other;
 
     public static Matrix4 operator -(Matrix4 a) =>
         new(-a.Column1, -a.Column2, -a.Column3, -a.Column4);
@@ -114,6 +151,9 @@ public class Matrix4(
             a.Column1 * b.Column2.X + a.Column2 * b.Column2.Y + a.Column3 * b.Column2.Z + a.Column4 * b.Column2.W,
             a.Column1 * b.Column3.X + a.Column2 * b.Column3.Y + a.Column3 * b.Column3.Z + a.Column4 * b.Column3.W,
             a.Column1 * b.Column4.X + a.Column2 * b.Column4.Y + a.Column3 * b.Column4.Z + a.Column4 * b.Column4.W);
+    
+    public static Vector4 operator *(Matrix4 a, Vector4 b) =>
+        a.Column1 * b.X + a.Column2 * b.Y + a.Column3 * b.Z + a.Column4 * b.W;
 
     public static bool operator ==(Matrix4? a, Matrix4? b) =>
         (a is null && b is null) || 
@@ -133,4 +173,28 @@ public class Matrix4(
             Column3.GetHashCode(),
             Column4.GetHashCode()
         );
+
+    public Matrix4 Copy() => new(Column1, Column2, Column3, Column4);
+
+    public float this[int row, int column] 
+    {
+        get => column switch
+        {
+            0 => Column1[row],
+            1 => Column2[row],
+            2 => Column3[row],
+            3 => Column4[row],
+            _ => throw new IndexOutOfRangeException()
+        };
+        set => _ = column switch
+        {
+            0 => Column1[row] = value,
+            1 => Column2[row] = value,
+            2 => Column3[row] = value,
+            3 => Column4[row] = value,
+            _ => throw new IndexOutOfRangeException()
+        };
+    }
+
+    public override string ToString() => $"[{Column1}, {Column2}, {Column3}, {Column4}]";
 }

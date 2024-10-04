@@ -1,3 +1,5 @@
+using System.Dynamic;
+
 namespace BlazeFrame.Maths;
 
 public class Vector2(float x, float y) : IEquatable<Vector2>
@@ -65,4 +67,20 @@ public class Vector2(float x, float y) : IEquatable<Vector2>
     
     public static implicit operator Vector2((float x, float y) tuple) => new(tuple.x, tuple.y);
     public static implicit operator float[](Vector2 vector) => [vector.X, vector.Y];
+
+    public float this[int index]
+    {
+        get => index switch
+        {
+            0 => X,
+            1 => Y,
+            _ => throw new IndexOutOfRangeException()
+        };
+        set => _ = index switch
+        {
+            0 => X = value,
+            1 => Y = value,
+            _ => throw new IndexOutOfRangeException()
+        };
+    }
 }

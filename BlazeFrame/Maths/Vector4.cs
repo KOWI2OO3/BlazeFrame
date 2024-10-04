@@ -69,4 +69,24 @@ public class Vector4(float x, float y, float z, float w)
     
     public static implicit operator Vector4((float x, float y, float z, float w) tuple) => new(tuple.x, tuple.y, tuple.z, tuple.w);
     public static implicit operator float[](Vector4 vector) => [vector.X, vector.Y, vector.Z, vector.W];
+
+    public float this[int index]
+    {
+        get => index switch
+        {
+            0 => X,
+            1 => Y,
+            2 => Z,
+            3 => W,
+            _ => throw new IndexOutOfRangeException()
+        };
+        set => _ = index switch
+        {
+            0 => X = value,
+            1 => Y = value,
+            2 => Z = value,
+            3 => W = value,
+            _ => throw new IndexOutOfRangeException()
+        };
+    }
 }

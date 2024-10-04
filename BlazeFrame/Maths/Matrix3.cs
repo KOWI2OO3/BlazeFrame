@@ -47,9 +47,15 @@ public class Matrix3(
                                            matrix2.M21, matrix2.M22, 0, 
                                            0, 0, 1) { }
 
+    public Matrix3() : this(1, 0, 0, 
+                            0, 1, 0, 
+                            0, 0, 1) { }
+
     public static Matrix3 Identity => new(1, 0, 0, 
                                           0, 1, 0, 
                                           0, 0, 1);
+
+    public static Matrix3 EMPTY => new(Vector3.Zero, Vector3.Zero, Vector3.Zero);
 
     public float Determinant => M11 * M22 * M33 + M12 * M23 * M31 + M13 * M21 * M32 - M13 * M22 * M31 - M12 * M21 * M33 - M11 * M23 * M32;
 
@@ -71,7 +77,26 @@ public class Matrix3(
 
     public Matrix3 Multiply(Matrix3 other) => this * other;
 
-    public static Matrix3 CreateRotational() => null;
+    public static Matrix3 CreateRotational(Axis axis, float angle) => 
+        axis switch
+        {
+            Axis.X => new(
+                1, 0, 0,
+                0, MathF.Cos(angle), -MathF.Sin(angle),
+                0, MathF.Sin(angle), MathF.Cos(angle)
+            ),
+            Axis.Y => new(
+                MathF.Cos(angle), 0, MathF.Sin(angle),
+                0, 1, 0,
+                -MathF.Sin(angle), 0, MathF.Cos(angle)
+            ),
+            Axis.Z => new(
+                MathF.Cos(angle), -MathF.Sin(angle), 0,
+                MathF.Sin(angle), MathF.Cos(angle), 0,
+                0, 0, 1
+            ),
+            _ => Identity
+        };
 
     public static Matrix3 operator -(Matrix3 a) =>
         new(
@@ -132,4 +157,24 @@ public class Matrix3(
             Column2.GetHashCode(),
             Column3.GetHashCode()
         );
+
+    public Matrix3 Copy() => new(Column1, Column2, Column3);
+
+    public float this[int row, int column] 
+    {
+        get => column switch
+        {
+            0 => Column1[row],
+            1 => Column2[row],
+            2 => Column3[row],
+            _ => throw new IndexOutOfRangeException()
+        };
+        set => _ = column switch
+        {
+            0 => Column1[row] = value,
+            1 => Column2[row] = value,
+            2 => Column3[row] = value,
+            _ => throw new IndexOutOfRangeException()
+        };
+    }
 }

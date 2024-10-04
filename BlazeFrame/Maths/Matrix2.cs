@@ -1,10 +1,11 @@
+using System.Numerics;
+
 namespace BlazeFrame.Maths;
 
 public class Matrix2(float m11, float m12, float m21, float m22) : IEquatable<Matrix2>
 {
-    public Vector2 Column1 { get; set; } = new(m11, m12);
-
-    public Vector2 Column2 { get; set; } = new(m21, m22);
+    public Vector2 Column1 { get; set; } = new(m11, m21);
+    public Vector2 Column2 { get; set; } = new(m12, m22);
 
     /// <summary>The first element of the first row.</summary>
     public float M11 { get => Column1.X; set => Column1.X = value; }
@@ -47,6 +48,7 @@ public class Matrix2(float m11, float m12, float m21, float m22) : IEquatable<Ma
     public static Matrix2 operator -(Matrix2 a) => new(-a.M11, -a.M12, -a.M21, -a.M22);
     public static Matrix2 operator *(Matrix2 a, float b) => new(a.M11 * b, a.M12 * b, a.M21 * b, a.M22 * b);
     public static Matrix2 operator /(Matrix2 a, float b) => new(a.M11 / b, a.M12 / b, a.M21 / b, a.M22 / b);
+    public static Matrix2 operator *(Matrix2 a, Matrix2 b) => new(a.Column1 * b.Column1.X + a.Column2 * b.Column1.Y, a.Column1 * b.Column2.X + a.Column2 * b.Column2.Y);
     
     public static bool operator ==(Matrix2? a, Matrix2? b) => 
         (a is null && b is null) || 
@@ -61,4 +63,23 @@ public class Matrix2(float m11, float m12, float m21, float m22) : IEquatable<Ma
 
     public override int GetHashCode() => HashCode.Combine(M11, M12, M21, M22);
 
+    public static Matrix2 CreateRotational(float angle) => new(MathF.Cos(angle), -MathF.Sin(angle), MathF.Sin(angle), MathF.Cos(angle));
+
+    public Matrix2 Copy() => new(Column1, Column2);
+
+    public float this[int row, int column] 
+    {
+        get => column switch
+        {
+            0 => Column1[row],
+            1 => Column2[row],
+            _ => throw new IndexOutOfRangeException()
+        };
+        set => _ = column switch
+        {
+            0 => Column1[row] = value,
+            1 => Column2[row] = value,
+            _ => throw new IndexOutOfRangeException()
+        };
+    }
 }
