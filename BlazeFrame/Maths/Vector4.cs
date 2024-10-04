@@ -14,7 +14,7 @@ public class Vector4(float x, float y, float z, float w)
     public float Z { get; set; } = z;
     public float W { get; set; } = w;
 
-    public Vector4(Vector4 vec, float w = 1) : this(vec.X, vec.Y, vec.Z, w) { }
+    public Vector4(Vector3 vec, float w = 1) : this(vec.X, vec.Y, vec.Z, w) { }
     public Vector4(Vector2 vec, float z = 0, float w = 1) : this(vec.X, vec.Y, z, w) { }
 
     public float Magnitude => MathF.Sqrt(MagnitudeSqr);
