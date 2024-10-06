@@ -8,7 +8,7 @@ using System.Reflection.Metadata;
 
 namespace BlazeFrame.Components;
 
-public partial class BFCanvas : ComponentBase
+public partial class BFCanvas : RenderLoopComponentBase
 {
     // TODO: Use JSRuntime to not require the services if the user only uses the components?? 
     // TODO: Allow screen scaling (needs experimenting)
@@ -57,7 +57,7 @@ public partial class BFCanvas : ComponentBase
         return classes;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task Update()
     {
         await FetchDataAsync();
 
