@@ -27,6 +27,11 @@ export function invokeBatch(batchCalls) {
     }
 }
 
+export function getParentSize(obj)
+{
+    return {width: obj.parentElement.clientWidth, height: obj.parentElement.clientHeight};
+}
+
 export function print(message) {
     console.log(message);
 }
