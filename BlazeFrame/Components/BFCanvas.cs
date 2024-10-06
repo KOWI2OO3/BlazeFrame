@@ -1,5 +1,7 @@
 using BlazeFrame.Canvas.Html;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using System.Drawing;
 using System.Reflection.Metadata;
 
 namespace BlazeFrame.Components;
@@ -8,6 +10,9 @@ public partial class BFCanvas : ComponentBase
 {
     // TODO: Use JSRuntime to not require the services if the user only uses the components?? 
     // TODO: Allow screen scaling (needs experimenting)
+    
+    [Inject]
+    public required IJSRuntime JSRuntime { get; set; }
 
     protected readonly string Id = Guid.NewGuid().ToString();
 
@@ -24,7 +29,10 @@ public partial class BFCanvas : ComponentBase
     public string Style { get; set; } = string.Empty;
 
     [Parameter]
-    public EventCallback<Context2D> OnRender { get; set; }
+    public Color? BackgroundColor { get; set; }
+
+    [Parameter]
+    public Func<Context2D, Task>? OnRenderFrame { get; set; }
 
     private ElementReference _canvasRef { get; set; }
 
@@ -34,14 +42,21 @@ public partial class BFCanvas : ComponentBase
 
     public HtmlCanvas? Canvas { get; set; }
 
-    protected sealed override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        FetchDataAsync();
-        
+        await FetchDataAsync();
+
         if(Context == null) return;
         Context.StartBatch();
+        
+        if(BackgroundColor != null)
+        {
+            Context.SetColor(BackgroundColor.Value);
+            await Context.FillRectAsync(0, 0, (int)Width, (int)Height);
+        }
 
-        await OnRender.InvokeAsync(Context);
+        if(OnRenderFrame != null)
+            await OnRenderFrame.Invoke(Context);
 
         await Context.EndBatch();
     }
@@ -49,8 +64,11 @@ public partial class BFCanvas : ComponentBase
     /// <summary>
     /// Used to fetch data from the javascript side, this can relate to client rect data or other relevant data.
     /// </summary>
-    private async void FetchDataAsync()
+    private async Task FetchDataAsync()
     {
+        Console.WriteLine("Retrieving data...");
+        JSInvoker.INSTANCE ??= await JSInvoker.Create(JSRuntime);
+
         Canvas ??= await CanvasRef.asHtmlCanvas();
         Context ??= await CanvasRef.GetContext2D();
     }

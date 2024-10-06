@@ -4,7 +4,7 @@ namespace BlazeFrame;
 
 public class JSInvoker
 {
-    public static JSInvoker INSTANCE { get; internal set; } = new(null);
+    public static JSInvoker INSTANCE { get; internal set; } 
 
     public const string NAMESPACE = "BlazeFrame";
 
@@ -70,7 +70,7 @@ public class JSInvoker
         if(Module == null)
             throw new InvalidOperationException("Module not initialized");
         isBatching = false;
-        await Module.InvokeVoidAsync("invokeBatch", batchedCalls);
+        await Module.InvokeVoidAsync("invokeBatch", batchedCalls).ConfigureAwait(false);
 
         batchedCalls.Clear();
     }

@@ -6,7 +6,7 @@ public static class Context2DHelper
 {
     public static void SetColor(this Context2D ctx, string color) => ctx.FillStyle = ctx.StrokeStyle = color;
 
-    public static void SetColor(this Context2D ctx, Color color) => ctx.SetColor($"rgb({color.R}, {color.G}, {color.B} / {color.A})");
+    public static void SetColor(this Context2D ctx, Color color) => ctx.SetColor($"rgba({color.R}, {color.G}, {color.B}, {color.A})");
 
     public static async Task DrawRectangleAsync(this Context2D ctx, int x, int y, int width, int height, string? color = null)
     {
