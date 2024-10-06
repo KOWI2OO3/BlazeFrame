@@ -86,7 +86,7 @@ public class JSInvoker
 
     [Obsolete("Use SetPropertyAsync instead")]
     public async void SetProperty<T>(object? jSObject, string propertyName, T value) => 
-        await SetPropertyAsync(jSObject, propertyName, value);
+    await SetPropertyAsync(jSObject, propertyName, value);
     
     public async ValueTask SetPropertyAsync<T>(object? jSObject, string propertyName, T value) { 
         if(Module == null)

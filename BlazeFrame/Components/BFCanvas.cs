@@ -1,4 +1,6 @@
 using BlazeFrame.Canvas.Html;
+using BlazeFrame.Element;
+using BlazeFrame.Logic;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Drawing;
@@ -17,10 +19,10 @@ public partial class BFCanvas : ComponentBase
     protected readonly string Id = Guid.NewGuid().ToString();
 
     [Parameter]
-    public long Height { get; set; }
+    public int Height { get; set; } = 600;
 
     [Parameter]
-    public long Width { get; set; }
+    public int Width { get; set; } = 800;
 
     [Parameter]
     public string Class { get; set; } = string.Empty;
@@ -30,6 +32,9 @@ public partial class BFCanvas : ComponentBase
 
     [Parameter]
     public Color? BackgroundColor { get; set; }
+
+    [Parameter]
+    public bool AutoScale { get; set; } = true;
 
     [Parameter]
     public Func<Context2D, Task>? OnRenderFrame { get; set; }
@@ -42,13 +47,32 @@ public partial class BFCanvas : ComponentBase
 
     public HtmlCanvas? Canvas { get; set; }
 
+    private ParentElement? ParentElement { get; set; }
+
+    private string GetClass()
+    {
+        var classes = $"bf-canvas {Class}";
+        if(AutoScale)
+            classes += " bf-canvas-auto-scale";
+        return classes;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await FetchDataAsync();
 
         if(Context == null) return;
         Context.StartBatch();
-        
+
+        if(AutoScale)
+        {
+            if(ParentElement != null) {
+                CanvasRef.SetAttributeProperty("width", Width = ParentElement.Width, true);
+                CanvasRef.SetAttributeProperty("height", Height = ParentElement.Height, true);
+            }
+            await Context.ScaleCanvasToDisplay(Canvas);
+        }
+
         if(BackgroundColor != null)
         {
             Context.SetColor(BackgroundColor.Value);
@@ -66,10 +90,10 @@ public partial class BFCanvas : ComponentBase
     /// </summary>
     private async Task FetchDataAsync()
     {
-        Console.WriteLine("Retrieving data...");
         JSInvoker.INSTANCE ??= await JSInvoker.Create(JSRuntime);
 
         Canvas ??= await CanvasRef.asHtmlCanvas();
         Context ??= await CanvasRef.GetContext2D();
+        ParentElement ??= await CanvasRef.GetParentElement();
     }
 }
