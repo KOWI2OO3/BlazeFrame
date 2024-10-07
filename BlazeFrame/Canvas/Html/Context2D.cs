@@ -49,10 +49,6 @@ public class Context2D(JSInvoker invoker, IJSObjectReference JSObject) : ModuleJ
         shadowOffsetY = await GetProperty<double>(nameof(shadowOffsetY));
     }
 
-    public void StartBatch() => Invoker.BeginBatch();
-
-    public async Task EndBatch() => await Invoker.EndBatch();
-
     public async Task ClearRectAsync(int x, int y, int width, int height) =>
         await Invoke("clearRect", x, y, width, height);
 

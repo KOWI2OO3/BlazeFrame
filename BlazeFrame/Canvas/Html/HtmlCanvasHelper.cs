@@ -1,4 +1,5 @@
 using System.Net;
+using BlazeFrame.Canvas.WebGL;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -14,7 +15,15 @@ public static class HtmlCanvasHelper
         return context;
     }
 
-    public static async Task<HtmlCanvas> asHtmlCanvas(this ElementReference element)
+    public static async Task<WebGLRenderingContext> GetWebGLContext(this ElementReference canvas)
+    {
+        var jscontext = await JSInvoker.INSTANCE.InvokeAsync<IJSObjectReference>(canvas, "getContext", "webgl");
+        var context = new WebGLRenderingContext(JSInvoker.INSTANCE, jscontext);
+        await context.InitializeProperties();
+        return context;
+    }
+
+    public static async Task<HtmlCanvas> AsHtmlCanvas(this ElementReference element)
     {
         var canvas = new HtmlCanvas(JSInvoker.INSTANCE, element);
         await canvas.InitializePropertiesAsync();

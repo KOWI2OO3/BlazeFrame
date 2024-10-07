@@ -40,4 +40,8 @@ public class ModuleJSObject(JSInvoker invoker, IJSObjectReference JSObject) : IW
         else
             return await JSObject.InvokeAsync<T>(method, args);
     }
+
+    public void StartBatch() => Invoker.BeginBatch();
+
+    public async Task EndBatch() => await Invoker.EndBatch();
 }
