@@ -85,11 +85,23 @@ export function mouseToCanvasCoordinates(canvas, x, y) {
 
 function  getMousePos(canvas, x, y) {
     var rect = canvas.getBoundingClientRect(), // abs. size of element
-      scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for x
-      scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for y
-  
+        scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for x
+        scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for y
+
     return {
-      x: (x - rect.left) * scaleX,   // scale mouse coordinates after they have
-      y: (y - rect.top) * scaleY     // been adjusted to be relative to element
+        x: (x - rect.left) * scaleX,   // scale mouse coordinates after they have
+        y: (y - rect.top) * scaleY     // been adjusted to be relative to element
     }
-  }
+}
+
+export function setUniform(context, program, name, type, value) 
+{
+    var location = context.getUniformLocation(program, name);
+    context[type](location, value);
+}
+
+export function setMatrixUniform(context, program, name, type, transpose, value) 
+{
+    var location = context.getUniformLocation(program, name);
+    context[type](location, transpose, value);
+}
