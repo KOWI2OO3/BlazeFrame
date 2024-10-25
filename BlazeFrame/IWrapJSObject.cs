@@ -4,6 +4,6 @@ namespace BlazeFrame;
 
 public interface IWrapJSObject
 {
-    public IJSObjectReference  JSObject { get; }
+    public IJSObjectReference JSObject { get; }
 
 }

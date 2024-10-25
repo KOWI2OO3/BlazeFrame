@@ -21,7 +21,6 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     }
 
 #region The WebGL context
-    // getContextAttributes()
 
     /// <returns>true if the context is lost, otherwise returns false</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/isContextLost</remarks>
@@ -533,7 +532,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// - gl.ELEMENT_ARRAY_BUFFER
     ///     Buffer used for element indices.
     /// </param>
-    /// <param name="size">A GLsizeiptr setting the size in bytes of the buffer object's data store.</param>
+    /// <param name="srcData">An ArrayBuffer, SharedArrayBuffer, a TypedArray or a DataView that will be copied into the data store. If null, a data store is still created, but the content is uninitialized and undefined.</param>
     /// <param name="usage">
     /// A GLenum specifying the intended usage pattern of the data store for optimization purposes. Possible values:
     ///  - gl.STATIC_DRAW
@@ -547,6 +546,84 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// </param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bufferData</remarks>
     public async Task BufferData(uint target, byte[] srcData, uint usage) => await Invoke("bufferData", target, srcData, usage);
+
+    /// <summary>
+    /// initializes and creates the buffer object's data store.
+    /// </summary>
+    /// <param name="target">
+    /// A GLenum specifying the binding point (target). Possible values:
+    /// - gl.ARRAY_BUFFER
+    ///     Buffer containing vertex attributes, such as vertex coordinates, texture coordinate data, or vertex color data.
+    /// 
+    /// - gl.ELEMENT_ARRAY_BUFFER
+    ///     Buffer used for element indices.
+    /// </param>
+    /// <param name="srcData">An ArrayBuffer, SharedArrayBuffer, a TypedArray or a DataView that will be copied into the data store. If null, a data store is still created, but the content is uninitialized and undefined.</param>
+    /// <param name="usage">
+    /// A GLenum specifying the intended usage pattern of the data store for optimization purposes. Possible values:
+    ///  - gl.STATIC_DRAW
+    ///      The contents are intended to be specified once by the application, and used many times as the source for WebGL drawing and image specification commands.
+    /// 
+    ///  - gl.DYNAMIC_DRAW
+    ///      The contents are intended to be respecified repeatedly by the application, and used many times as the source for WebGL drawing and image specification commands.
+    /// 
+    ///  - gl.STREAM_DRAW
+    ///      The contents are intended to be specified once by the application, and used at most a few times as the source for WebGL drawing and image specification commands.
+    /// </param>
+    /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bufferData</remarks>
+    public async Task BufferData(uint target, float[] srcData, uint usage) => await Invoke("bufferData", target, srcData, usage);
+    
+    /// <summary>
+    /// initializes and creates the buffer object's data store.
+    /// </summary>
+    /// <param name="target">
+    /// A GLenum specifying the binding point (target). Possible values:
+    /// - gl.ARRAY_BUFFER
+    ///     Buffer containing vertex attributes, such as vertex coordinates, texture coordinate data, or vertex color data.
+    /// 
+    /// - gl.ELEMENT_ARRAY_BUFFER
+    ///     Buffer used for element indices.
+    /// </param>
+    /// <param name="srcData">An ArrayBuffer, SharedArrayBuffer, a TypedArray or a DataView that will be copied into the data store. If null, a data store is still created, but the content is uninitialized and undefined.</param>
+    /// <param name="usage">
+    /// A GLenum specifying the intended usage pattern of the data store for optimization purposes. Possible values:
+    ///  - gl.STATIC_DRAW
+    ///      The contents are intended to be specified once by the application, and used many times as the source for WebGL drawing and image specification commands.
+    /// 
+    ///  - gl.DYNAMIC_DRAW
+    ///      The contents are intended to be respecified repeatedly by the application, and used many times as the source for WebGL drawing and image specification commands.
+    /// 
+    ///  - gl.STREAM_DRAW
+    ///      The contents are intended to be specified once by the application, and used at most a few times as the source for WebGL drawing and image specification commands.
+    /// </param>
+    /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bufferData</remarks>
+    public async Task BufferData(uint target, double[] srcData, uint usage) => await Invoke("bufferData", target, srcData, usage);
+    
+    /// <summary>
+    /// initializes and creates the buffer object's data store.
+    /// </summary>
+    /// <param name="target">
+    /// A GLenum specifying the binding point (target). Possible values:
+    /// - gl.ARRAY_BUFFER
+    ///     Buffer containing vertex attributes, such as vertex coordinates, texture coordinate data, or vertex color data.
+    /// 
+    /// - gl.ELEMENT_ARRAY_BUFFER
+    ///     Buffer used for element indices.
+    /// </param>
+    /// <param name="srcData">An ArrayBuffer, SharedArrayBuffer, a TypedArray or a DataView that will be copied into the data store. If null, a data store is still created, but the content is uninitialized and undefined.</param>
+    /// <param name="usage">
+    /// A GLenum specifying the intended usage pattern of the data store for optimization purposes. Possible values:
+    ///  - gl.STATIC_DRAW
+    ///      The contents are intended to be specified once by the application, and used many times as the source for WebGL drawing and image specification commands.
+    /// 
+    ///  - gl.DYNAMIC_DRAW
+    ///      The contents are intended to be respecified repeatedly by the application, and used many times as the source for WebGL drawing and image specification commands.
+    /// 
+    ///  - gl.STREAM_DRAW
+    ///      The contents are intended to be specified once by the application, and used at most a few times as the source for WebGL drawing and image specification commands.
+    /// </param>
+    /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bufferData</remarks>
+    public async Task BufferData(uint target, uint[] srcData, uint usage) => await Invoke("bufferData", target, srcData, usage);
 
     /// <summary>
     /// updates a subset of a buffer object's data store.
