@@ -13,9 +13,23 @@ export function invokeFunction(obj, method, args) {
         return this[method](...args);
 }
 
+function fillFacades(facades, params) 
+{
+    for(let i = 0; i < params.length; i++) 
+    {
+        if(params[i]['facadeId'])
+            params[i] = facades[params[i]['facadeId']];
+    }
+    return params;
+}
+
 export function invokeBatch(batchCalls) {
+    let results = {};
+    let facades = {};
     for (let batchCall of batchCalls) {
         let params = batchCall.slice(3);
+
+        params = fillFacades(facades, params);
         switch (batchCall[0]) {
             case 'invokeFunction':
                 invokeFunction(batchCall[1] ?? this, batchCall[2], params);
@@ -23,13 +37,42 @@ export function invokeBatch(batchCalls) {
             case 'setProperty':
                 setProperty(batchCall[1] ?? obj, batchCall[2], params[0]);
                 break
+            case 'invokeCallbackFunction':
+                let facade = batchCall[3];
+                let facadeId = facade['facadeId'];
+
+                let result = invokeFunction(batchCall[1] ?? this, batchCall[2], params.slice(1));
+
+                facades[facadeId] = result;
+                results[facadeId] = facade['requiresObjectReference'] ? DotNet.createJSObjectReference(result).__jsObjectId : result;
+                break;
         }
+    }
+    return results;
+}
+
+export function calculate(operation, a, b)
+{
+    switch(operation)
+    {
+        case 'add':
+            return a + b;
+        case 'subtract':
+            return a - b;
+        case 'multiply':
+            return a * b;
+        case 'divide':
+            return a / b;
+        case 'negate':
+            return -a;
+        default:
+            return 0;
     }
 }
 
 export function getParentSize(obj)
 {
-    return {width: obj.parentElement.clientWidth, height: obj.parentElement.clientHeight};
+    return { width: obj.parentElement.clientWidth, height: obj.parentElement.clientHeight };
 }
 
 export function print(message) {
@@ -104,4 +147,12 @@ export function setMatrixUniform(context, program, name, type, transpose, value)
 {
     var location = context.getUniformLocation(program, name);
     context[type](location, transpose, value);
+}
+
+export function getValue()
+{
+    return 42;
+    // return {
+    //     interger: 42
+    // };
 }

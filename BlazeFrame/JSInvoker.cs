@@ -1,4 +1,11 @@
+using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
+using BlazeFrame.JSInterop;
+using BlazeFrame.Logic;
 using Microsoft.JSInterop;
+using Microsoft.JSInterop.Implementation;
 
 namespace BlazeFrame;
 
@@ -14,13 +21,13 @@ public class JSInvoker
     
     public const string INVOKE_CALLBACK_FUNCTION = "invokeCallbackFunction";
     
-    private IJSRuntime? JSRuntime { get; set; }
+    public IJSRuntime? JSRuntime { get; private set; }
 
     internal IJSObjectReference? Module { get; private set; }
 
     private readonly List<object?[]> batchedCalls = [];
 
-    private readonly Dictionary<Guid, (Type, Action<object>)> batchCallbacks = [];
+    private readonly Dictionary<Guid, Facade> batchedFacades = [];
 
     private bool isBatching = false;
 
@@ -56,24 +63,58 @@ public class JSInvoker
         return true;
     }
 
-    public bool InvokeBatched(object? JSObject, string methodName, params object[] args) 
+    public bool InvokeBatched(object? JSObject, string methodName, params object?[] args) 
     {
         if(!isBatching) return false;
+        args = ResolveFacades(args);
+        
         object?[] batchedCall = [INVOKE_FUNCTION, JSObject, methodName, .. args];
         batchedCalls.Add(batchedCall);
 
         return true;
     }
 
+    public bool InvokeBatched<K>(object? JSObject, string methodName, out K facade, params object?[] args) where K : Facade, new()
+    {
+        facade = null;
+        if(!isBatching) return false;
+        args = ResolveFacades(args);
+
+        facade = new K()
+        {
+            Invoker = this
+        };
+
+        batchedFacades.Add(facade.Id, facade);
+        object?[] batchedCall = [INVOKE_CALLBACK_FUNCTION, JSObject, methodName, facade, .. args];
+        batchedCalls.Add(batchedCall);
+
+        return true;
+    }
+
+    public bool IsBatching() => isBatching;
+
     public async Task EndBatch() 
     {
         if(Module == null)
             throw new InvalidOperationException("Module not initialized");
         isBatching = false;
-        await Module.InvokeVoidAsync("invokeBatch", batchedCalls).ConfigureAwait(false);
+        var results = await Module.InvokeAsync<Dictionary<string, object>>("invokeBatch", batchedCalls).ConfigureAwait(false);
 
+        foreach(var entry in results) 
+        {
+            if(!Guid.TryParse(entry.Key, out var facadeId) || !batchedFacades.TryGetValue(facadeId, out var facade))
+                continue;
+            
+            if(facade != null && entry.Value is JsonElement json)
+                facade.SetValue(json);
+        }
+
+        batchedFacades.Clear();
         batchedCalls.Clear();
     }
+
+    private object?[] ResolveFacades(object?[] args) => args.Select(x => x is Facade f && f.HasValue ? f.GetValue() : x).ToArray();
 
 #endregion
 

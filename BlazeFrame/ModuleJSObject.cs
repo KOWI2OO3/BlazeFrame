@@ -1,3 +1,4 @@
+using BlazeFrame.JSInterop;
 using Microsoft.JSInterop;
 
 namespace BlazeFrame;
@@ -22,6 +23,18 @@ public class ModuleJSObject(JSInvoker invoker, IJSObjectReference JSObject) : IW
             await Invoker.InvokeVoidAsync(JSObject, method, args);
     }
 
+    protected void InvokeBatched(string method, params object[] args) {
+        if(!Invoker.InvokeBatched(JSObject, method, args))
+            throw new InvalidOperationException("Batched call failed");
+    }
+
+    protected T InvokeBatched<T>(string method, params object[] args) where T : Facade, new()
+    {
+        if(!Invoker.InvokeBatched<T>(JSObject, method, out var result, args))
+            throw new InvalidOperationException("Batched call failed");
+        return result;
+    }
+
     protected async Task<T> Invoke<T>(string method, params object[] args) 
     {
         if(typeof(T).IsAssignableTo(typeof(ModuleJSObject)))
@@ -40,6 +53,8 @@ public class ModuleJSObject(JSInvoker invoker, IJSObjectReference JSObject) : IW
         else
             return await JSObject.InvokeAsync<T>(method, args);
     }
+
+    public bool IsBatching() => Invoker.IsBatching();
 
     public void StartBatch() => Invoker.BeginBatch();
 
