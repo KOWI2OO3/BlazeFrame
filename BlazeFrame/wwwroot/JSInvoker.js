@@ -51,7 +51,7 @@ export function invokeBatch(batchCalls) {
     return results;
 }
 
-export function calculate(operation, a, b)
+export function compute(operation, a, b)
 {
     switch(operation)
     {
@@ -63,8 +63,34 @@ export function calculate(operation, a, b)
             return a * b;
         case 'divide':
             return a / b;
+        case 'modulo':	
+            return a % b;
         case 'negate':
             return -a;
+        case 'invert':
+            return !a;
+        case 'equal':
+            return a == b;
+        case 'notequal':
+            return a != b;
+        case 'greater':
+            return a > b;
+        case 'less':
+            return a < b;
+        case 'gequal':
+            return a >= b;
+        case 'lequal':
+            return a <= b;
+        case 'and':
+            return a & b;
+        case 'or':
+            return a | b;
+        case 'xor':
+            return a ^ b;
+        case 'lshift':
+            return a << b;
+        case 'rshift':
+            return a >> b;
         default:
             return 0;
     }

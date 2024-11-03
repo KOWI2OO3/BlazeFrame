@@ -1,13 +1,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.JSInterop;
 
 namespace BlazeFrame.JSInterop;
 
 public abstract class Facade 
 {
     [JsonPropertyName("facadeId")]
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; internal set; } = Guid.NewGuid();
     
     [JsonIgnore]
     public JSInvoker? Invoker { internal get; init; }
@@ -23,7 +22,7 @@ public abstract class Facade
 public class Facade<T> : Facade
 {
     [JsonIgnore]
-    public T? Value { get; protected set; }
+    public T? Value { get; internal set; }
 
     public override void SetValue(JsonElement json)
     {
@@ -41,4 +40,7 @@ public class Facade<T> : Facade
     {
         return HasValue ? Value?.ToString() ?? "null" : "facade@" + Id;
     }
+
+    public override bool Equals(object? obj) => HasValue ? Value?.Equals(obj) ?? obj == null : base.Equals(obj);
+    public override int GetHashCode() => HasValue ? Value?.GetHashCode() ?? 0 : Id.GetHashCode();
 }
