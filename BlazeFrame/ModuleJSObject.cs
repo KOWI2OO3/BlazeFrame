@@ -28,7 +28,7 @@ public class ModuleJSObject(JSInvoker invoker, IJSObjectReference JSObject) : IW
             throw new InvalidOperationException("Batched call failed");
     }
 
-    protected T InvokeBatched<T>(string method, params object[] args) where T : Facade, new()
+    protected T InvokeBatched<T>(string method, params object[] args) where T : Proxy, new()
     {
         if(!Invoker.InvokeBatched<T>(JSObject, method, out var result, args))
             throw new InvalidOperationException("Batched call failed");

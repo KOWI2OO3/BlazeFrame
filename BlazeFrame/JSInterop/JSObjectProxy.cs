@@ -6,7 +6,7 @@ using Microsoft.JSInterop.Implementation;
 
 namespace BlazeFrame.JSInterop;
 
-public class JSObjectFacade : Facade<JSObjectReference>
+public class JSObjectProxy : Proxy<JSObjectReference>
 {
     [JsonPropertyName("requiresObjectReference")]
     public bool RequiresObjectReference { get; } = true;

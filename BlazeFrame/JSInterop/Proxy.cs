@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace BlazeFrame.JSInterop;
 
-public abstract class Facade 
+public abstract class Proxy 
 {
-    [JsonPropertyName("facadeId")]
+    [JsonPropertyName("proxyId")]
     public Guid Id { get; internal set; } = Guid.NewGuid();
     
     [JsonIgnore]
@@ -19,7 +19,7 @@ public abstract class Facade
     public abstract object? GetValue();
 }
 
-public class Facade<T> : Facade
+public class Proxy<T> : Proxy
 {
     [JsonIgnore]
     public T? Value { get; internal set; }
@@ -38,7 +38,7 @@ public class Facade<T> : Facade
 
     public override string ToString()
     {
-        return HasValue ? Value?.ToString() ?? "null" : "facade@" + Id;
+        return HasValue ? Value?.ToString() ?? "null" : "proxy@" + Id;
     }
 
     public override bool Equals(object? obj) => HasValue ? Value?.Equals(obj) ?? obj == null : base.Equals(obj);

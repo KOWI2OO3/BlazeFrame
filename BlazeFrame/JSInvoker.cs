@@ -1,11 +1,6 @@
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
 using BlazeFrame.JSInterop;
-using BlazeFrame.Logic;
 using Microsoft.JSInterop;
-using Microsoft.JSInterop.Implementation;
+using System.Text.Json;
 
 namespace BlazeFrame;
 
@@ -27,7 +22,7 @@ public class JSInvoker
 
     private readonly List<object?[]> batchedCalls = [];
 
-    private readonly Dictionary<Guid, Facade> batchedFacades = [];
+    private readonly Dictionary<Guid, Proxy> batchedProxies = [];
 
     private bool isBatching = false;
 
@@ -66,7 +61,7 @@ public class JSInvoker
     public bool InvokeBatched(object? JSObject, string methodName, params object?[] args) 
     {
         if(!isBatching) return false;
-        args = ResolveFacades(args);
+        args = ResolveProxies(args);
         
         object?[] batchedCall = [INVOKE_FUNCTION, JSObject, methodName, .. args];
         batchedCalls.Add(batchedCall);
@@ -74,19 +69,19 @@ public class JSInvoker
         return true;
     }
 
-    public bool InvokeBatched<K>(object? JSObject, string methodName, out K facade, params object?[] args) where K : Facade, new()
+    public bool InvokeBatched<K>(object? JSObject, string methodName, out K proxy, params object?[] args) where K : Proxy, new()
     {
-        facade = null;
+        proxy = null;
         if(!isBatching) return false;
-        args = ResolveFacades(args);
+        args = ResolveProxies(args);
 
-        facade = new K()
+        proxy = new K()
         {
             Invoker = this
         };
 
-        batchedFacades.Add(facade.Id, facade);
-        object?[] batchedCall = [INVOKE_CALLBACK_FUNCTION, JSObject, methodName, facade, .. args];
+        batchedProxies.Add(proxy.Id, proxy);
+        object?[] batchedCall = [INVOKE_CALLBACK_FUNCTION, JSObject, methodName, proxy, .. args];
         batchedCalls.Add(batchedCall);
 
         return true;
@@ -103,18 +98,18 @@ public class JSInvoker
 
         foreach(var entry in results) 
         {
-            if(!Guid.TryParse(entry.Key, out var facadeId) || !batchedFacades.TryGetValue(facadeId, out var facade))
+            if(!Guid.TryParse(entry.Key, out var proxyId) || !batchedProxies.TryGetValue(proxyId, out var proxy))
                 continue;
             
-            if(facade != null && entry.Value is JsonElement json)
-                facade.SetValue(json);
+            if(proxy != null && entry.Value is JsonElement json)
+                proxy.SetValue(json);
         }
 
-        batchedFacades.Clear();
+        batchedProxies.Clear();
         batchedCalls.Clear();
     }
 
-    private object?[] ResolveFacades(object?[] args) => args.Select(x => x is Facade f && f.HasValue ? f.GetValue() : x).ToArray();
+    private static object?[] ResolveProxies(object?[] args) => args.Select(x => x is Proxy proxy && proxy.HasValue ? proxy.GetValue() : x).ToArray();
 
 #endregion
 

@@ -13,23 +13,23 @@ export function invokeFunction(obj, method, args) {
         return this[method](...args);
 }
 
-function fillFacades(facades, params) 
+function fillProxies(proxies, params) 
 {
     for(let i = 0; i < params.length; i++) 
     {
-        if(params[i]['facadeId'])
-            params[i] = facades[params[i]['facadeId']];
+        if(params[i]['proxyId'])
+            params[i] = proxies[params[i]['proxyId']];
     }
     return params;
 }
 
 export function invokeBatch(batchCalls) {
     let results = {};
-    let facades = {};
+    let proxies = {};
     for (let batchCall of batchCalls) {
         let params = batchCall.slice(3);
 
-        params = fillFacades(facades, params);
+        params = fillProxies(proxies, params);
         switch (batchCall[0]) {
             case 'invokeFunction':
                 invokeFunction(batchCall[1] ?? this, batchCall[2], params);
@@ -38,13 +38,13 @@ export function invokeBatch(batchCalls) {
                 setProperty(batchCall[1] ?? obj, batchCall[2], params[0]);
                 break
             case 'invokeCallbackFunction':
-                let facade = batchCall[3];
-                let facadeId = facade['facadeId'];
+                let proxy = batchCall[3];
+                let proxyId = proxy['proxyId'];
 
                 let result = invokeFunction(batchCall[1] ?? this, batchCall[2], params.slice(1));
 
-                facades[facadeId] = result;
-                results[facadeId] = facade['requiresObjectReference'] ? DotNet.createJSObjectReference(result).__jsObjectId : result;
+                proxies[proxyId] = result;
+                results[proxyId] = proxy['requiresObjectReference'] ? DotNet.createJSObjectReference(result).__jsObjectId : result;
                 break;
         }
     }
@@ -94,6 +94,17 @@ export function compute(operation, a, b)
         default:
             return 0;
     }
+}
+
+export function handleOperations(operation, object) 
+{
+    switch(operation)
+    {
+        case 'length':
+            return object.length;
+        default:
+            return 0;
+    };
 }
 
 export function getParentSize(obj)
