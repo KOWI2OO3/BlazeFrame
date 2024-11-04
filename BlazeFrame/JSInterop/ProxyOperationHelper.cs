@@ -80,7 +80,7 @@ public static class ProxyOperationHelper
         // { typeof(Guid), typeof(GuidProxy) },
     };
 
-    public static Proxy<T> CreateFromValue<T>(JsonElement value) 
+    public static Proxy<T> CreateFromJson<T>(JsonElement value) 
     {
         Proxy<T>? proxy = null;
         if(typeof(T).IsAssignableTo(typeof(Proxy)))
@@ -93,9 +93,27 @@ public static class ProxyOperationHelper
         return proxy;
     }
 
+    public static T CreateFromJsonProxy<T>(JsonElement value) where T : Proxy, new()
+    {
+        if(typeof(T) == typeof(Proxy<>))
+        {
+            var generics = typeof(T).GetGenericArguments();
+            if(generics.Length > 0) 
+            {
+                var result =  (T)typeof(ProxyOperationHelper).GetMethod(nameof(CreateFromJson))!.MakeGenericMethod(generics[0]).Invoke(null, [value])!;
+                if(result is not null)
+                    return result;
+            }   
+        }
+        
+        var proxy = new T();
+        proxy.SetValue(value);
+        return proxy;
+    }
+
     public static T? CreatePotentialProxy<T>(JsonElement json) 
     {
-        var proxy = CreateFromValue<T>(json);
+        var proxy = CreateFromJson<T>(json);
         return typeof(T).IsAssignableTo(typeof(Proxy)) ? (T)(object)proxy : proxy.Value;
     }
 }
