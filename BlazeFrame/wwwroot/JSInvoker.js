@@ -96,6 +96,17 @@ export function compute(operation, a, b)
     }
 }
 
+export function resolveProxyOperation(operation, proxy, args)
+{
+    switch(operation)
+    {
+        case 'length':
+            return proxy.length;
+        default:
+            return 0;
+    }
+}
+
 export function handleOperations(operation, object) 
 {
     switch(operation)
@@ -188,7 +199,7 @@ export function setMatrixUniform(context, program, name, type, transpose, value)
 
 export function getValue()
 {
-    return 42;
+    return "Hello from JS";
     // return {
     //     interger: 42
     // };
