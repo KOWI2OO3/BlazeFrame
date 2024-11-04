@@ -1,5 +1,5 @@
-using Microsoft.JSInterop;
+using BlazeFrame.JSInterop;
 
 namespace BlazeFrame.Canvas.WebGL.GLObjects;
 
-public record WebGLFramebuffer(IJSObjectReference JSObject) : IWrapJSObject;
+public class WebGLFramebuffer : JSObjectProxy;

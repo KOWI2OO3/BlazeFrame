@@ -1,4 +1,5 @@
 using BlazeFrame.Canvas.WebGL.GLObjects;
+using BlazeFrame.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -280,7 +281,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying which parameter value to return. See below for possible values.</param>
     /// <returns>a value for the passed parameter name.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getParameter</remarks>
-    public async Task<T> GetPrarameter<T>(uint pname) => await Invoke<T>("getParameter", pname); 
+    public Proxy<T> GetPrarameter<T>(uint pname) => InvokeBatched<Proxy<T>>("getParameter", pname); 
     
     // TODO: C# Cache the values of the parameters when set
 
@@ -291,14 +292,14 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying which parameter value to return. See below for possible values.</param>
     /// <returns>a value for the passed parameter name.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getParameter</remarks>
-    public async Task<T> GetPrarameter<T>(GLParameter<T> pname) => await Invoke<T>("getParameter", pname.Name);
+    public Proxy<T> GetPrarameter<T>(GLParameter<T> pname) => InvokeBatched<Proxy<T>>("getParameter", pname.Name);
 
     /// <summary>
     /// returns error information.
     /// </summary>
     /// <returns>error information.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getError</remarks>
-    public async Task<uint> GetError() =>  await JSObject.InvokeAsync<uint>("getError");
+    public BinaryNumberProxy<uint> GetError() =>  InvokeBatched<BinaryNumberProxy<uint>>("getError");
 
     /// <summary>
     /// specifies hints for certain behaviors. The interpretation of these hints depend on the implementation.
@@ -342,7 +343,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// </param>
     /// <returns>A GLboolean indicating if the capability cap is enabled (true), or not (false).</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/isEnabled</remarks>
-    public async Task<bool> IsEnabled(uint capability) => await JSObject.InvokeAsync<bool>("isEnabled", capability);
+    public BooleanProxy IsEnabled(uint capability) => InvokeBatched<BooleanProxy>("isEnabled", capability);
 
     /// <summary>
     /// sets the line width of rasterized lines.
@@ -493,7 +494,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// </param>
     /// <param name="buffer">A WebGLBuffer to bind.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bindBuffer</remarks>
-    public async Task BindBuffer(uint target, WebGLBuffer buffer) => await Invoke("bindBuffer", target, buffer.JSObject);
+    public async Task BindBuffer(uint target, WebGLBuffer buffer) => await Invoke("bindBuffer", target, buffer);
 
     /// <summary>
     /// initializes and creates the buffer object's data store.
@@ -673,7 +674,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// </summary>
     /// <param name="buffer">A WebGLBuffer object to delete.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/deleteBuffer</remarks>
-    public async Task DeleteBuffer(WebGLBuffer buffer) => await Invoke("deleteBuffer", buffer.JSObject);
+    public async Task DeleteBuffer(WebGLBuffer buffer) => await Invoke("deleteBuffer", buffer);
 
     /// <summary>
     /// 
@@ -700,7 +701,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     ///     - gl.STREAM_DRAW
     /// </param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getBufferParameter</remarks>
-    public async Task<int> GetBufferParameter(uint target, uint pname) => await Invoke<int>("getBufferParameter", target, pname);
+    public BinaryNumberProxy<int> GetBufferParameter(uint target, uint pname) => InvokeBatched<BinaryNumberProxy<int>>("getBufferParameter", target, pname);
 
     /// <summary>
     /// returns true if the passed WebGLBuffer is valid and false otherwise.
@@ -708,7 +709,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="buffer">A WebGLBuffer to check.</param>
     /// <returns>A GLboolean indicating whether or not the buffer is valid.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/isBuffer</remarks>
-    public async Task<bool> IsBuffer(WebGLBuffer buffer) => await Invoke<bool>("isBuffer", buffer.JSObject);
+    public BooleanProxy IsBuffer(WebGLBuffer buffer) => InvokeBatched<BooleanProxy>("isBuffer", buffer);
 
 #endregion
 
@@ -733,7 +734,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="framebuffer">A WebGLFramebuffer object to bind, or null for binding the HTMLCanvasElement or OffscreenCanvas object associated with the rendering context.</param>
     /// <exception cref="GL.INVALID_ENUM">If target is not gl.FRAMEBUFFER, gl.DRAW_FRAMEBUFFER, or gl.READ_FRAMEBUFFER.</exception>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bindFramebuffer</remarks>
-    public async Task BindFramebuffer(uint target, WebGLFramebuffer framebuffer) => await Invoke("bindFramebuffer", target, framebuffer.JSObject);
+    public async Task BindFramebuffer(uint target, WebGLFramebuffer framebuffer) => await Invoke("bindFramebuffer", target, framebuffer);
 
     /// <summary>
     /// returns the completeness status of the WebGLFramebuffer object.
@@ -763,21 +764,21 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     ///  - ext.FRAMEBUFFER_INCOMPLETE_VIEW_TARGETS_OVR: If baseViewIndex is not the same for all framebuffer attachment points where the value of FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is not NONE, the framebuffer is considered incomplete.
     /// </returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/checkFramebufferStatus</remarks>
-    public async Task<uint> CheckFramebufferStatus(uint target) => await Invoke<uint>("checkFramebufferStatus", target);
+    public BinaryNumberProxy<uint> CheckFramebufferStatus(uint target) => InvokeBatched<BinaryNumberProxy<uint>>("checkFramebufferStatus", target);
 
     /// <summary>
     /// creates and initializes a WebGLFramebuffer object.
     /// </summary>
     /// <returns>A WebGLFramebuffer object.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/createFramebuffer</remarks>
-    public async Task<WebGLFramebuffer> CreateFramebuffer() => await Invoke<WebGLFramebuffer>("createFramebuffer");
+    public WebGLFramebuffer CreateFramebuffer() => InvokeBatched<WebGLFramebuffer>("createFramebuffer");
 
     /// <summary>
     /// deletes a given WebGLFramebuffer object. This method has no effect if the frame buffer has already been deleted.
     /// </summary>
     /// <param name="framebuffer">A WebGLFramebuffer object to delete.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/deleteFramebuffer</remarks>
-    public async Task DeleteFramebuffer(WebGLFramebuffer framebuffer) => await Invoke("deleteFramebuffer", framebuffer.JSObject);
+    public async Task DeleteFramebuffer(WebGLFramebuffer framebuffer) => await Invoke("deleteFramebuffer", framebuffer);
 
     /// <summary>
     /// attaches a WebGLRenderbuffer object to a WebGLFramebuffer object.
@@ -812,7 +813,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <exception cref="GL.INVALID_ENUM">If attachment is not one of the allowed enums.</exception>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/framebufferRenderbuffer</remarks>
     public async Task FramebufferRenderbuffer(uint target, uint attachment, uint renderbuffertarget, WebGLRenderbuffer renderbuffer) => 
-        await Invoke("framebufferRenderbuffer", target, attachment, renderbuffertarget, renderbuffer.JSObject);
+        await Invoke("framebufferRenderbuffer", target, attachment, renderbuffertarget, renderbuffer);
 
     /// <summary>
     /// 
@@ -857,7 +858,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <exception cref="GL.INVALID_OPERATION ">error is thrown if texture isn't 0 or the name of an existing texture object.</exception>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/framebufferTexture2D</remarks>
     public async Task FramebufferTexture2D(uint target, uint attachment, uint textarget, WebGLTexture texture, int level) => 
-        await Invoke("framebufferTexture2D", target, attachment, textarget, texture.JSObject, level);
+        await Invoke("framebufferTexture2D", target, attachment, textarget, texture, level);
 
     /// <summary>
     /// returns information about a framebuffer's attachment. Use GLFramebufferAttachmentParameter as pname to make it type safe.
@@ -892,7 +893,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <returns>Depends on the requested information (as specified with pname). Either a GLint, a GLenum, a WebGLRenderbuffer, or a WebGLTexture.</returns>
     /// <exception cref="GL.INVALID_VALUE">Thrown if target is not gl.FRAMEBUFFER, gl.DRAW_FRAMEBUFFER, gl.READ_FRAMEBUFFER or if attachment is not one of the accepted attachment points.</exception>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getFramebufferAttachmentParameter</remarks>
-    public async Task<T> GetFramebufferAttachmentParameter<T>(uint target, uint attachment, uint pname) => await Invoke<T>("getFramebufferAttachmentParameter", target, attachment, pname);
+    public Proxy<T> GetFramebufferAttachmentParameter<T>(uint target, uint attachment, uint pname) => InvokeBatched<Proxy<T>>("getFramebufferAttachmentParameter", target, attachment, pname);
 
     /// <summary>
     /// returns information about a framebuffer's attachment.
@@ -927,7 +928,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <returns>Depends on the requested information (as specified with pname). Either a GLint, a GLenum, a WebGLRenderbuffer, or a WebGLTexture.</returns>
     /// <exception cref="GL.INVALID_VALUE">Thrown if target is not gl.FRAMEBUFFER, gl.DRAW_FRAMEBUFFER, gl.READ_FRAMEBUFFER or if attachment is not one of the accepted attachment points.</exception>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getFramebufferAttachmentParameter</remarks>
-    public async Task<T> GetFramebufferAttachmentParameter<T>(uint target, uint attachment, GLParameter<T> pname) => await Invoke<T>("getFramebufferAttachmentParameter", target, attachment, pname.Name);
+    public Proxy<T> GetFramebufferAttachmentParameter<T>(uint target, uint attachment, GLParameter<T> pname) => InvokeBatched<Proxy<T>>("getFramebufferAttachmentParameter", target, attachment, pname.Name);
 
     /// <summary>
     /// returns true if the passed WebGLFramebuffer is valid and false otherwise.
@@ -935,7 +936,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="framebuffer">A WebGLFramebuffer to check.</param>
     /// <returns>A GLboolean indicating whether or not the frame buffer is valid.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/isFramebuffer</remarks>
-    public async Task<bool> IsFramebuffer(WebGLFramebuffer framebuffer) => await Invoke<bool>("isFramebuffer", framebuffer.JSObject);
+    public BooleanProxy IsFramebuffer(WebGLFramebuffer framebuffer) => InvokeBatched<BooleanProxy>("isFramebuffer", framebuffer);
 
     /// <summary>
     /// reads a block of pixels from a specified rectangle of the current color framebuffer into a TypedArray or a DataView object.
@@ -982,14 +983,14 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="renderbuffer">A WebGLRenderbuffer object to bind.</param>
     /// <exception cref="GL.INVALID_ENUM">Error is thrown if target is not gl.RENDERBUFFER.</exception>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bindRenderbuffer</remarks>
-    public async Task BindRenderbuffer(uint target, WebGLRenderbuffer renderbuffer) => await Invoke("bindRenderbuffer", target, renderbuffer.JSObject);
+    public async Task BindRenderbuffer(uint target, WebGLRenderbuffer renderbuffer) => await Invoke("bindRenderbuffer", target, renderbuffer);
 
     /// <summary>
     /// creates and initializes a WebGLRenderbuffer object.
     /// </summary>
     /// <returns>A WebGLRenderbuffer object that stores data such an image, or can be source or target of an rendering operation.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/createRenderbuffer</remarks>
-    public async Task<WebGLRenderbuffer> CreateRenderbuffer() => await Invoke<WebGLRenderbuffer>("createRenderbuffer");
+    public WebGLRenderbuffer CreateRenderbuffer() => InvokeBatched<WebGLRenderbuffer>("createRenderbuffer");
 
     /// <summary>
     /// returns information about the renderbuffer.Use GLRenderbufferParameter as pname to make it type safe.
@@ -1003,7 +1004,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying the information to query. check documentation for more information</param>
     /// <returns>Depends on the requested information (as specified with pname). Either a GLint or a GLenum.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getRenderbufferParameter</remarks>
-    public async Task<T> GetRenderbufferParameter<T>(uint target, uint pname) => await Invoke<T>("getRenderbufferParameter", target, pname);
+    public Proxy<T> GetRenderbufferParameter<T>(uint target, uint pname) => InvokeBatched<Proxy<T>>("getRenderbufferParameter", target, pname);
 
     /// <summary>
     /// returns information about the renderbuffer.
@@ -1017,7 +1018,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying the information to query. check documentation for more information</param>
     /// <returns>Depends on the requested information (as specified with pname). Either a GLint or a GLenum.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getRenderbufferParameter</remarks>
-    public async Task<T> GetRenderbufferParameter<T>(uint target, GLParameter<T> pname) => await Invoke<T>("getRenderbufferParameter", target, pname.Name);
+    public Proxy<T> GetRenderbufferParameter<T>(uint target, GLParameter<T> pname) => InvokeBatched<Proxy<T>>("getRenderbufferParameter", target, pname.Name);
 
     /// <summary>
     ///  returns true if the passed WebGLRenderbuffer is valid and false otherwise.
@@ -1025,7 +1026,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="renderbuffer">A WebGLRenderbuffer to check.</param>
     /// <returns>A GLboolean indicating whether or not the renderbuffer is valid.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/isRenderbuffer</remarks>
-    public async Task<bool> IsRenderbuffer(WebGLRenderbuffer renderbuffer) => await Invoke<bool>("isRenderbuffer", renderbuffer.JSObject);
+    public BooleanProxy IsRenderbuffer(WebGLRenderbuffer renderbuffer) => InvokeBatched<BooleanProxy>("isRenderbuffer", renderbuffer);
 
     /// <summary>
     /// creates and initializes a renderbuffer object's data store.
@@ -1066,7 +1067,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="texture">A WebGLTexture object to bind.</param>
     /// <exception cref="GL.INVALID_ENUM">Thrown if target is not gl.TEXTURE_2D, gl.TEXTURE_CUBE_MAP, gl.TEXTURE_3D, or gl.TEXTURE_2D_ARRAY.</exception>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bindTexture</remarks>
-    public async Task BindTexture(uint target, WebGLTexture texture) => await Invoke("bindTexture", target, texture.JSObject);
+    public async Task BindTexture(uint target, WebGLTexture texture) => await Invoke("bindTexture", target, texture);
 
     /// <summary>
     /// interface of the WebGL API specifies a two-dimensional texture image in a compressed format. 
@@ -1194,14 +1195,14 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// </summary>
     /// <returns>A WebGLTexture object to which images can be bound to.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/createTexture</remarks>
-    public async Task<WebGLTexture> CreateTexture() => await Invoke<WebGLTexture>("createTexture");
+    public WebGLTexture CreateTexture() => InvokeBatched<WebGLTexture>("createTexture");
 
     /// <summary>
     /// deletes a given WebGLTexture object. This method has no effect if the texture has already been deleted.
     /// </summary>
     /// <param name="texture">A WebGLTexture object to delete.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/deleteTexture</remarks>
-    public async Task DeleteTexture(WebGLTexture texture) => await Invoke("deleteTexture", texture.JSObject);
+    public async Task DeleteTexture(WebGLTexture texture) => await Invoke("deleteTexture", texture);
 
     /// <summary>
     /// generates a set of mipmaps for a WebGLTexture object. 
@@ -1230,7 +1231,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying the information to query</param>
     /// <returns>The requested texture information (as specified with pname). If an error occurs, null is returned.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getTexParameter</remarks>
-    public async Task<T> GetTexParameter<T>(uint target, uint pname) => await Invoke<T>("getTexParameter", target, pname);
+    public Proxy<T> GetTexParameter<T>(uint target, uint pname) => InvokeBatched<Proxy<T>>("getTexParameter", target, pname);
 
     
     /// <summary>
@@ -1245,7 +1246,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying the information to query</param>
     /// <returns>The requested texture information (as specified with pname). If an error occurs, null is returned.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getTexParameter</remarks>
-    public async Task<T> GetTexParameter<T>(uint target, GLParameter<T> pname) => await Invoke<T>("getTexParameter", target, pname);
+    public Proxy<T> GetTexParameter<T>(uint target, GLParameter<T> pname) => InvokeBatched<Proxy<T>>("getTexParameter", target, pname);
 
     /// <summary>
     /// returns true if the passed WebGLTexture is valid and false otherwise.
@@ -1253,7 +1254,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="texture">A WebGLTexture to check.</param>
     /// <returns>A GLboolean indicating whether or not the texture is valid.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/isTexture</remarks>
-    public async Task<bool> IsTexture(WebGLTexture texture) => await Invoke<bool>("isTexture", texture.JSObject);
+    public BooleanProxy IsTexture(WebGLTexture texture) => InvokeBatched<BooleanProxy>("isTexture", texture);
 
     /// <summary>
     /// specifies a two-dimensional texture image.
@@ -1405,7 +1406,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="program">A WebGLProgram.</param>
     /// <param name="shader">A fragment or vertex WebGLShader.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/attachShader</remarks>
-    public async Task AttachShader(WebGLProgram program, WebGLShader shader) => await Invoke("attachShader", program.JSObject, shader.JSObject);
+    public async Task AttachShader(WebGLProgram program, WebGLShader shader) => await Invoke("attachShader", program, shader);
 
     /// <summary>
     /// binds a generic vertex index to an attribute variable.
@@ -1417,14 +1418,14 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// This name cannot start with "webgl_" or "_webgl_", as these are reserved for use by WebGL.
     /// </param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bindAttribLocation</remarks>
-    public async Task BindAttribLocation(WebGLProgram program, uint index, string name) => await Invoke("bindAttribLocation", program.JSObject, index, name);
+    public async Task BindAttribLocation(WebGLProgram program, uint index, string name) => await Invoke("bindAttribLocation", program, index, name);
 
     /// <summary>
     /// compiles a GLSL shader into binary data so that it can be used by a WebGLProgram.
     /// </summary>
     /// <param name="shader">A fragment or vertex WebGLShader.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/compileShader</remarks>
-    public async Task CompileShader(WebGLShader shader) => await Invoke("compileShader", shader.JSObject);
+    public async Task CompileShader(WebGLShader shader) => await Invoke("compileShader", shader);
 
     /// <summary>
     /// creates and initializes a WebGLProgram object.
@@ -1434,7 +1435,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// These are then linked into a usable program.
     /// </returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/createProgram</remarks>
-    public async Task<WebGLProgram> CreateProgram() => await Invoke<WebGLProgram>("createProgram");
+    public WebGLProgram CreateProgram() => InvokeBatched<WebGLProgram>("createProgram");
 
     /// <summary>
     /// creates a WebGLShader that can then be configured further using WebGLRenderingContext.shaderSource() and WebGLRenderingContext.compileShader().
@@ -1442,14 +1443,14 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="type">Either gl.VERTEX_SHADER or gl.FRAGMENT_SHADER</param>
     /// <returns>A new (WebGLShader).</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/createShader</remarks>
-    public async Task<WebGLShader> CreateShader(uint type) => await Invoke<WebGLShader>("createShader", type);
+    public WebGLShader CreateShader(uint type) => InvokeBatched<WebGLShader>("createShader", type);
 
     /// <summary>
     /// deletes a given WebGLProgram object. This method has no effect if the program has already been deleted.
     /// </summary>
     /// <param name="program">A WebGLProgram object to delete.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/deleteProgram</remarks>
-    public async Task DeleteProgram(WebGLProgram program) => await Invoke("deleteProgram", program.JSObject);
+    public async Task DeleteProgram(WebGLProgram program) => await Invoke("deleteProgram", program);
 
     /// <summary>
     /// marks a given WebGLShader object for deletion. It will then be deleted whenever the shader is no longer in use. 
@@ -1458,7 +1459,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// </summary>
     /// <param name="shader">A WebGLShader object to delete.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/deleteShader</remarks>
-    public async Task DeleteShader(WebGLShader shader) => await Invoke("deleteShader", shader.JSObject);
+    public async Task DeleteShader(WebGLShader shader) => await Invoke("deleteShader", shader);
 
     /// <summary>
     /// detaches a previously attached WebGLShader from a WebGLProgram.
@@ -1466,7 +1467,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="program">A WebGLProgram.</param>
     /// <param name="shader">A fragment or vertex WebGLShader.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/detachShader</remarks>
-    public async Task DetachShader(WebGLProgram program, WebGLShader shader) => await Invoke("detachShader", program.JSObject, shader.JSObject);
+    public async Task DetachShader(WebGLProgram program, WebGLShader shader) => await Invoke("detachShader", program, shader);
 
     /// <summary>
     /// returns a list of WebGLShader objects attached to a WebGLProgram.
@@ -1474,7 +1475,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="program">A WebGLProgram object to get attached shaders for.</param>
     /// <returns>An Array of WebGLShader objects that are attached to the given WebGLProgram.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getAttachedShaders</remarks>
-    public async Task<WebGLShader[]> GetAttachedShaders(WebGLProgram program) => await Invoke<WebGLShader[]>("getAttachedShaders", program.JSObject);
+    public ArrayProxy<WebGLShader> GetAttachedShaders(WebGLProgram program) => InvokeBatched<ArrayProxy<WebGLShader>>("getAttachedShaders", program);
 
     /// <summary>
     /// returns information about the given program. use GLProgramParameters to make it type safe.
@@ -1484,7 +1485,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying the information to query. Use GLProgramParameters to get strong typed returns</param>
     /// <returns>Returns the requested program information (as specified with pname).</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getProgramParameter</remarks>
-    public async Task<T> GetProgramParameter<T>(WebGLProgram program, uint pname) => await Invoke<T>("getProgramParameter", program.JSObject, pname);
+    public Proxy<T> GetProgramParameter<T>(WebGLProgram program, uint pname) => InvokeBatched<Proxy<T>>("getProgramParameter", program, pname);
 
     /// <summary>
     /// returns information about the given program.
@@ -1494,7 +1495,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying the information to query. Use GLProgramParameters to get strong typed returns</param>
     /// <returns>Returns the requested program information (as specified with pname).</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getProgramParameter</remarks>
-    public async Task<T> GetProgramParameter<T>(WebGLProgram program, GLParameter<T> pname) => await Invoke<T>("getProgramParameter", program.JSObject, pname);
+    public Proxy<T> GetProgramParameter<T>(WebGLProgram program, GLParameter<T> pname) => InvokeBatched<Proxy<T>>("getProgramParameter", program, pname);
 
     /// <summary>
     /// returns the information log for the specified WebGLProgram object. It contains errors that occurred during failed linking or validation of WebGLProgram objects.
@@ -1505,7 +1506,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// When a WebGLProgram object is initially created, its information log will be a string of length 0.
     /// </returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getProgramInfoLog</remarks>
-    public async Task<string> GetProgramInfoLog(WebGLProgram program) => await Invoke<string>("getProgramInfoLog", program.JSObject);	
+    public StringProxy GetProgramInfoLog(WebGLProgram program) => InvokeBatched<StringProxy>("getProgramInfoLog", program);	
 
     /// <summary>
     /// returns information about the given shader. use GLShaderParameters to make it type safe.
@@ -1515,7 +1516,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying the information to query. use GLShaderParameters</param>
     /// <returns>Returns the requested shader information (as specified with pname).</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getShaderParameter</remarks>
-    public async Task<T> GetShaderParameter<T>(WebGLShader shader, uint pname) => await Invoke<T>("getShaderParameter", shader.JSObject, pname);
+    public Proxy<T> GetShaderParameter<T>(WebGLShader shader, uint pname) => InvokeBatched<Proxy<T>>("getShaderParameter", shader, pname);
 
     /// <summary>
     /// returns information about the given shader. Use GLShaderParameters.
@@ -1525,7 +1526,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying the information to query. use GLShaderParameters</param>
     /// <returns>Returns the requested shader information (as specified with pname).</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getShaderParameter</remarks>
-    public async Task<T> GetShaderParameter<T>(WebGLShader shader, GLParameter<T> pname) => await Invoke<T>("getShaderParameter", shader.JSObject, pname);
+    public Proxy<T> GetShaderParameter<T>(WebGLShader shader, GLParameter<T> pname) => InvokeBatched<Proxy<T>>("getShaderParameter", shader, pname);
 
     /// <summary>
     /// returns a new WebGLShaderPrecisionFormat object describing the range and precision for the specified shader
@@ -1536,8 +1537,8 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <exception cref="GL.INVALID_ENUM">If the shader or precision types aren't recognized.</exception>
     /// <exception cref="GL.INVALID_OPERATION">If the shader compiler isn't supported.</exception>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getShaderPrecisionFormat</remarks>
-    public async Task<WebGLShaderPrecisionFormat> GetShaderPrecisionFormat(uint shadertype, uint precisiontype) => 
-        await Invoke<WebGLShaderPrecisionFormat>("getShaderPrecisionFormat", shadertype, precisiontype);
+    public WebGLShaderPrecisionFormat GetShaderPrecisionFormat(uint shadertype, uint precisiontype) => 
+        InvokeBatched<WebGLShaderPrecisionFormat>("getShaderPrecisionFormat", shadertype, precisiontype);
 
     /// <summary>
     /// returns the information log for the specified WebGLShader object. It contains warnings, debugging and compile information.
@@ -1548,7 +1549,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// When a WebGLShader object is initially created, its information log will be a string of length 0.
     /// </returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getShaderInfoLog</remarks>
-    public async Task<string> GetShaderInfoLog(WebGLShader shader) => await Invoke<string>("getShaderInfoLog", shader.JSObject);
+    public StringProxy GetShaderInfoLog(WebGLShader shader) => InvokeBatched<StringProxy>("getShaderInfoLog", shader);
 
     /// <summary>
     /// returns the source code of a WebGLShader as a string.
@@ -1556,7 +1557,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="shader">A WebGLShader object to get the source code from.</param>
     /// <returns>A string containing the source code of the shader.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getShaderSource</remarks>
-    public async Task<string> GetShaderSource(WebGLShader shader) => await Invoke<string>("getShaderSource", shader.JSObject);
+    public StringProxy GetShaderSource(WebGLShader shader) => InvokeBatched<StringProxy>("getShaderSource", shader);
 
     /// <summary>
     /// returns true if the passed WebGLProgram is valid, false otherwise.
@@ -1564,7 +1565,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="program">A WebGLProgram to check.</param>
     /// <returns>A GLboolean indicating whether or not the program is valid.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/isProgram</remarks>
-    public async Task<bool> IsProgram(WebGLProgram program) => await Invoke<bool>("isProgram", program.JSObject);
+    public BooleanProxy IsProgram(WebGLProgram program) => InvokeBatched<BooleanProxy>("isProgram", program);
 
     /// <summary>
     /// returns true if the passed WebGLShader is valid, false otherwise.
@@ -1572,14 +1573,14 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="shader">A WebGLShader to check.</param>
     /// <returns>A GLboolean indicating whether or not the shader is valid.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/isShader</remarks>
-    public async Task<bool> IsShader(WebGLShader shader) => await Invoke<bool>("isShader", shader.JSObject);
+    public BooleanProxy IsShader(WebGLShader shader) => InvokeBatched<BooleanProxy>("isShader", shader);
 
     /// <summary>
     /// links a given WebGLProgram, completing the process of preparing the GPU code for the program's fragment and vertex shaders.
     /// </summary>
     /// <param name="program">The WebGLProgram to link.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/linkProgram</remarks>
-    public async Task LinkProgram(WebGLProgram program) => await Invoke("linkProgram", program.JSObject);
+    public async Task LinkProgram(WebGLProgram program) => await Invoke("linkProgram", program);
 
     /// <summary>
     /// sets the source code of a WebGLShader.
@@ -1587,21 +1588,21 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="shader">A WebGLShader object in which to set the source code.</param>
     /// <param name="source">A string containing the GLSL source code to set.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/shaderSource</remarks>
-    public async Task ShaderSource(WebGLShader shader, string source) => await Invoke("shaderSource", shader.JSObject, source);
+    public async Task ShaderSource(WebGLShader shader, string source) => await Invoke("shaderSource", shader, source);
 
     /// <summary>
     /// sets the specified WebGLProgram as part of the current rendering state.
     /// </summary>
     /// <param name="program">A WebGLProgram to use.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/useProgram</remarks>
-    public async Task UseProgram(WebGLProgram program) => await Invoke("useProgram", program.JSObject);
+    public async Task UseProgram(WebGLProgram program) => await Invoke("useProgram", program);
 
     /// <summary>
     /// validates a WebGLProgram. It checks if it is successfully linked and if it can be used in the current WebGL state.
     /// </summary>
     /// <param name="program">A WebGLProgram to validate.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/validateProgram</remarks>
-    public async Task ValidateProgram(WebGLProgram program) => await Invoke("validateProgram", program.JSObject);
+    public async Task ValidateProgram(WebGLProgram program) => await Invoke("validateProgram", program);
 
 #endregion
 
@@ -1640,7 +1641,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// </param>
     /// <returns>A WebGLActiveInfo object.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getActiveAttrib</remarks>
-    public async Task<WebGLActiveInfo> GetActiveAttrib(WebGLProgram program, uint index) => await Invoke<WebGLActiveInfo>("getActiveAttrib", program.JSObject, index);
+    public Proxy<WebGLActiveInfo> GetActiveAttrib(WebGLProgram program, uint index) => InvokeBatched<Proxy<WebGLActiveInfo>>("getActiveAttrib", program, index);
 
     /// <summary>
     /// returns a WebGLActiveInfo object containing size, type, and name of a uniform attribute. 
@@ -1650,7 +1651,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="index">A GLuint specifying the index of the uniform attribute to get. This value is an index 0 to N - 1 as returned by gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS).</param>
     /// <returns>A WebGLActiveInfo object describing the uniform.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getActiveUniform</remarks>
-    public async Task<WebGLActiveInfo> GetActiveUniform(WebGLProgram program, uint index) => await Invoke<WebGLActiveInfo>("getActiveUniform", program.JSObject, index);
+    public Proxy<WebGLActiveInfo> GetActiveUniform(WebGLProgram program, uint index) => InvokeBatched<Proxy<WebGLActiveInfo>>("getActiveUniform", program, index);
 
     /// <summary>
     /// returns the location of an attribute variable in a given WebGLProgram.
@@ -1659,7 +1660,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="name">A string specifying the name of the attribute variable whose location to get.</param>
     /// <returns>A GLint number indicating the location of the variable name if found. Returns -1 otherwise.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getAttribLocation</remarks>
-    public async Task<int> GetAttribLocation(WebGLProgram program, string name) => await Invoke<int>("getAttribLocation", program.JSObject, name);
+    public BinaryNumberProxy<int> GetAttribLocation(WebGLProgram program, string name) => InvokeBatched<BinaryNumberProxy<int>>("getAttribLocation", program, name);
 
     /// <summary>
     /// returns the value of a uniform variable at a given location.
@@ -1669,7 +1670,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to get.</param>
     /// <returns>The returned type depends on the uniform type</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getUniform</remarks>
-    public async Task<T> GetUniform<T>(WebGLProgram program, WebGLUniformLocation location) => await Invoke<T>("getUniform", program.JSObject, location.JSObject);
+    public Proxy<T> GetUniform<T>(WebGLProgram program, WebGLUniformLocation location) => InvokeBatched<Proxy<T>>("getUniform", program, location);
 
     /// <summary>
     /// returns the location of a specific uniform variable which is part of a given WebGLProgram.
@@ -1686,7 +1687,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <exception cref="GL.INVALID_VALUE">TThe program parameter is not a value or object generated by WebGL.</exception>
     /// <exception cref="GL.INVALID_OPERATION">The program parameter doesn't correspond to a GLSL program generated by WebGL, or the specified program hasn't been linked successfully.</exception>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getUniformLocation</remarks>
-    public async Task<WebGLUniformLocation?> GetUniformLocation(WebGLProgram program, string name) => await Invoke<WebGLUniformLocation>("getUniformLocation", program.JSObject, name);
+    public WebGLUniformLocation GetUniformLocation(WebGLProgram program, string name) => InvokeBatched<WebGLUniformLocation>("getUniformLocation", program, name);
 
     /// <summary>
     /// returns information about a vertex attribute at a given position. Use GLVertexAttribParameters to make it type safe.
@@ -1696,7 +1697,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum specifying the information to query.</param>
     /// <returns>Returns the requested vertex attribute information</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getVertexAttrib</remarks>
-    public async Task<T> GetVertexAttrib<T>(uint index, uint pname) => await Invoke<T>("getVertexAttrib", index, pname);
+    public Proxy<T> GetVertexAttrib<T>(uint index, uint pname) => InvokeBatched<Proxy<T>>("getVertexAttrib", index, pname);
 
 
     /// <summary>
@@ -1706,7 +1707,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="pname">A GLenum which must be gl.VERTEX_ATTRIB_ARRAY_POINTER.</param>
     /// <returns>A GLintptr indicating the address of the vertex attribute.</returns>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/getVertexAttribOffset</remarks>
-    public async Task<int> GetVertexAttribOffset(int index, uint pname) => await Invoke<int>("getVertexAttribOffset", index, pname);
+    public BinaryNumberProxy<int> GetVertexAttribOffset(int index, uint pname) => InvokeBatched<BinaryNumberProxy<int>>("getVertexAttribOffset", index, pname);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1716,7 +1717,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to modify.</param>
     /// <param name="v0">A floating point Number for floating point values</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform1f(WebGLUniformLocation location, float v0) => await Invoke("uniform1f", location.JSObject, v0);
+    public async Task Uniform1f(WebGLUniformLocation location, float v0) => await Invoke("uniform1f", location, v0);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1726,7 +1727,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to modify.</param>
     /// <param name="value">A sequence of floating point numbers for floating point vector methods</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform1fv(WebGLUniformLocation location, float[] value) => await Invoke("uniform1fv", location.JSObject, value);
+    public async Task Uniform1fv(WebGLUniformLocation location, float[] value) => await Invoke("uniform1fv", location, value);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1736,7 +1737,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to modify.</param>
     /// <param name="v0">An integer Number for integer values</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform1i(WebGLUniformLocation location, int v0) => await Invoke("uniform1i", location.JSObject, v0);
+    public async Task Uniform1i(WebGLUniformLocation location, int v0) => await Invoke("uniform1i", location, v0);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1746,7 +1747,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to modify.</param>
     /// <param name="value">An Int32Array for integer vector methods</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform1iv(WebGLUniformLocation location, int[] value) => await Invoke("uniform1iv", location.JSObject, value);
+    public async Task Uniform1iv(WebGLUniformLocation location, int[] value) => await Invoke("uniform1iv", location, value);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1757,7 +1758,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="v0">A floating point Number for floating point values</param>
     /// <param name="v1">A floating point Number for floating point values</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform2f(WebGLUniformLocation location, float v0, float v1) => await Invoke("uniform2f", location.JSObject, v0, v1);
+    public async Task Uniform2f(WebGLUniformLocation location, float v0, float v1) => await Invoke("uniform2f", location, v0, v1);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1767,7 +1768,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to modify.</param>
     /// <param name="value">A sequence of floating point numbers for floating point vector methods</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform2fv(WebGLUniformLocation location, float[] value) => await Invoke("uniform2fv", location.JSObject, value);
+    public async Task Uniform2fv(WebGLUniformLocation location, float[] value) => await Invoke("uniform2fv", location, value);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1778,7 +1779,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="v0">An integer Number for integer values</param>
     /// <param name="v1">An integer Number for integer values</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform2i(WebGLUniformLocation location, int v0, int v1) => await Invoke("uniform2i", location.JSObject, v0, v1);
+    public async Task Uniform2i(WebGLUniformLocation location, int v0, int v1) => await Invoke("uniform2i", location, v0, v1);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1788,7 +1789,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to modify.</param>
     /// <param name="value">An Int32Array for integer vector methods</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform2iv(WebGLUniformLocation location, int[] value) => await Invoke("uniform2iv", location.JSObject, value);
+    public async Task Uniform2iv(WebGLUniformLocation location, int[] value) => await Invoke("uniform2iv", location, value);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1800,7 +1801,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="v1">A floating point Number for floating point values</param>
     /// <param name="v2">A floating point Number for floating point values</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform3f(WebGLUniformLocation location, float v0, float v1, float v2) => await Invoke("uniform3f", location.JSObject, v0, v1, v2);
+    public async Task Uniform3f(WebGLUniformLocation location, float v0, float v1, float v2) => await Invoke("uniform3f", location, v0, v1, v2);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1810,7 +1811,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to modify.</param>
     /// <param name="value">A sequence of floating point numbers for floating point vector methods</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform3fv(WebGLUniformLocation location, float[] value) => await Invoke("uniform3fv", location.JSObject, value);
+    public async Task Uniform3fv(WebGLUniformLocation location, float[] value) => await Invoke("uniform3fv", location, value);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1822,7 +1823,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="v1">An integer Number for integer values</param>
     /// <param name="v2">An integer Number for integer values</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform3i(WebGLUniformLocation location, int v0, int v1, int v2) => await Invoke("uniform3i", location.JSObject, v0, v1, v2);
+    public async Task Uniform3i(WebGLUniformLocation location, int v0, int v1, int v2) => await Invoke("uniform3i", location, v0, v1, v2);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1832,7 +1833,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to modify.</param>
     /// <param name="value">An Int32Array for integer vector methods</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform3iv(WebGLUniformLocation location, int[] value) => await Invoke("uniform3iv", location.JSObject, value);
+    public async Task Uniform3iv(WebGLUniformLocation location, int[] value) => await Invoke("uniform3iv", location, value);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1845,7 +1846,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="v2">A floating point Number for floating point values</param>
     /// <param name="v3">A floating point Number for floating point values</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform4f(WebGLUniformLocation location, float v0, float v1, float v2, float v3) => await Invoke("uniform4f", location.JSObject, v0, v1, v2, v3);
+    public async Task Uniform4f(WebGLUniformLocation location, float v0, float v1, float v2, float v3) => await Invoke("uniform4f", location, v0, v1, v2, v3);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1855,7 +1856,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to modify.</param>
     /// <param name="value">A sequence of floating point numbers for floating point vector methods</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform4fv(WebGLUniformLocation location, float[] value) => await Invoke("uniform4fv", location.JSObject, value);
+    public async Task Uniform4fv(WebGLUniformLocation location, float[] value) => await Invoke("uniform4fv", location, value);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1868,7 +1869,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="v2">An integer Number for integer values</param>
     /// <param name="v3">An integer Number for integer values</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform4i(WebGLUniformLocation location, int v0, int v1, int v2, int v3) => await Invoke("uniform4i", location.JSObject, v0, v1, v2, v3);
+    public async Task Uniform4i(WebGLUniformLocation location, int v0, int v1, int v2, int v3) => await Invoke("uniform4i", location, v0, v1, v2, v3);
 
     /// <summary>
     /// specify values of uniform variables. All active uniform variables defined in a program object are initialized to 0 when the program object is linked successfully. 
@@ -1878,7 +1879,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="location">A WebGLUniformLocation object containing the location of the uniform attribute to modify.</param>
     /// <param name="value">An Int32Array for integer vector methods</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniform</remarks>
-    public async Task Uniform4iv(WebGLUniformLocation location, int[] value) => await Invoke("uniform4iv", location.JSObject, value);
+    public async Task Uniform4iv(WebGLUniformLocation location, int[] value) => await Invoke("uniform4iv", location, value);
 
     /// <summary>
     /// specify matrix values for uniform variables.
@@ -1892,7 +1893,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="transpose">A GLboolean specifying whether to transpose the matrix. Must be false.</param>
     /// <param name="value">A Float32Array or sequence of GLfloat values. The values are assumed to be supplied in column major order.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniformMatrix</remarks>
-    public async Task UniformMatrix2fv(WebGLUniformLocation location, bool transpose, float[] value) => await Invoke("uniformMatrix2fv", location.JSObject, transpose, value);
+    public async Task UniformMatrix2fv(WebGLUniformLocation location, bool transpose, float[] value) => await Invoke("uniformMatrix2fv", location, transpose, value);
 
     /// <summary>
     /// specify matrix values for uniform variables.
@@ -1906,7 +1907,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="transpose">A GLboolean specifying whether to transpose the matrix. Must be false.</param>
     /// <param name="value">A Float32Array or sequence of GLfloat values. The values are assumed to be supplied in column major order.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniformMatrix</remarks>
-    public async Task UniformMatrix3fv(WebGLUniformLocation location, bool transpose, float[] value) => await Invoke("uniformMatrix3fv", location.JSObject, transpose, value);
+    public async Task UniformMatrix3fv(WebGLUniformLocation location, bool transpose, float[] value) => await Invoke("uniformMatrix3fv", location, transpose, value);
 
     /// <summary>
     /// specify matrix values for uniform variables.
@@ -1920,7 +1921,7 @@ public class WebGLRenderingContext(JSInvoker invoker, IJSObjectReference JSObjec
     /// <param name="transpose">A GLboolean specifying whether to transpose the matrix. Must be false.</param>
     /// <param name="value">A Float32Array or sequence of GLfloat values. The values are assumed to be supplied in column major order.</param>
     /// <remarks>https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/uniformMatrix</remarks>
-    public async Task UniformMatrix4fv(WebGLUniformLocation location, bool transpose, float[] value) => await Invoke("uniformMatrix4fv", location.JSObject, transpose, value);
+    public async Task UniformMatrix4fv(WebGLUniformLocation location, bool transpose, float[] value) => await Invoke("uniformMatrix4fv", location, transpose, value);
 
     /// <summary>
     /// specify constant values for generic vertex attributes.

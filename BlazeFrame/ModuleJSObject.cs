@@ -1,3 +1,4 @@
+using System.Reflection;
 using BlazeFrame.JSInterop;
 using Microsoft.JSInterop;
 
@@ -37,6 +38,13 @@ public class ModuleJSObject(JSInvoker invoker, IJSObjectReference JSObject) : IW
 
     protected async Task<T> Invoke<T>(string method, params object[] args) 
     {
+        if(IsBatching() && typeof(T).IsAssignableTo(typeof(Proxy<>)))
+        {
+            
+            var batchedMethod = typeof(ModuleJSObject).GetMethod("InvokeBatched")?.MakeGenericMethod(typeof(T).GetGenericArguments()[0]);
+            if(batchedMethod is not null)
+                return (T)batchedMethod?.Invoke(this, [JSObject, method, args])!;
+        }
         if(typeof(T).IsAssignableTo(typeof(ModuleJSObject)))
         {
             var result = await JSObject.InvokeAsync<IJSObjectReference>(method, args);
