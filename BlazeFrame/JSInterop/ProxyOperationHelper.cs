@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Text.Json;
 
 namespace BlazeFrame.JSInterop;
 
@@ -56,5 +57,45 @@ public static class ProxyOperationHelper
         if((a.HasValue && b.HasValue) || !(a.Invoker?.InvokeBatched<V>(null, "compute", out var proxy, Enum.GetName(operation)?.ToLower() ?? "null", a, b) ?? false))
             return new V() { Value = operationResolver(operation, a.Value!, b.Value!), HasValue = true  };
         return proxy;
+    }
+
+    private static readonly Dictionary<Type, Type> primitiveProxyMap = new()
+    {
+        { typeof(int), typeof(BinaryNumberProxy<int>) },
+        { typeof(uint), typeof(BinaryNumberProxy<uint>) },
+        { typeof(long), typeof(BinaryNumberProxy<long>) },
+        { typeof(ulong), typeof(BinaryNumberProxy<ulong>) },
+        { typeof(short), typeof(BinaryNumberProxy<short>) },
+        { typeof(ushort), typeof(BinaryNumberProxy<ushort>) },
+        { typeof(byte), typeof(BinaryNumberProxy<byte>) },
+        { typeof(sbyte), typeof(BinaryNumberProxy<sbyte>) },
+        { typeof(float), typeof(NumberProxy<float>) },
+        { typeof(double), typeof(NumberProxy<double>) },
+        { typeof(decimal), typeof(NumberProxy<decimal>) },
+        { typeof(BigInteger), typeof(BinaryNumberProxy<BigInteger>) },
+        { typeof(string), typeof(StringProxy) },
+        { typeof(bool), typeof(BooleanProxy) },
+        // { typeof(DateTime), typeof(DateTimeProxy) },
+        // { typeof(TimeSpan), typeof(TimeSpanProxy) },
+        // { typeof(Guid), typeof(GuidProxy) },
+    };
+
+    public static Proxy<T> CreateFromValue<T>(JsonElement value) 
+    {
+        Proxy<T>? proxy = null;
+        if(typeof(T).IsAssignableTo(typeof(Proxy)))
+            proxy = (Proxy<T>?)Activator.CreateInstance(typeof(T));
+        else if(primitiveProxyMap.TryGetValue(typeof(T), out var proxyType))
+            proxy = (Proxy<T>?)Activator.CreateInstance(proxyType);
+
+        proxy ??= new Proxy<T>();
+        proxy.SetValue(value);
+        return proxy;
+    }
+
+    public static T? CreatePotentialProxy<T>(JsonElement json) 
+    {
+        var proxy = CreateFromValue<T>(json);
+        return typeof(T).IsAssignableTo(typeof(Proxy)) ? (T)(object)proxy : proxy.Value;
     }
 }
